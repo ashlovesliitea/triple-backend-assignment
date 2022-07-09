@@ -1,6 +1,6 @@
 package com.example.triple_mileage;
 
-import com.example.triple_mileage.domain.User;
+import com.example.triple_mileage.domain.entity.User;
 import com.example.triple_mileage.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.stereotype.Repository;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;

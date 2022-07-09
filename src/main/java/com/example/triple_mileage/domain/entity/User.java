@@ -1,9 +1,9 @@
-package com.example.triple_mileage.domain;
+package com.example.triple_mileage.domain.entity;
 
+import com.example.triple_mileage.domain.entity.PointHistory;
+import com.example.triple_mileage.domain.entity.Review;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.List;
