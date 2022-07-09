@@ -1,5 +1,6 @@
-package com.example.triple_mileage.domain;
+package com.example.triple_mileage.domain.entity;
 
+import com.example.triple_mileage.domain.PointSituation;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,7 @@ import java.time.ZonedDateTime;
 public class PointHistory {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pointId;
 
     @ManyToOne(fetch=FetchType.LAZY)
