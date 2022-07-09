@@ -1,6 +1,7 @@
 package com.example.triple_mileage.service;
 
 import com.example.triple_mileage.domain.*;
+import com.example.triple_mileage.domain.entity.*;
 import com.example.triple_mileage.exception.AlreadyWroteReviewException;
 import com.example.triple_mileage.repository.PhotoRepository;
 import com.example.triple_mileage.repository.PlaceRepository;
@@ -10,9 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Null;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -108,7 +111,7 @@ public class ReviewService {
      */
 
     @Transactional
-    public void modifyReview(UUID reviewId,String content, List<UUID> attachedPhotos){
+    public void modifyReview(UUID reviewId,String content,List<UUID> attachedPhotos){
 
         Review review=findReview(reviewId);
         User user= review.getUser();
@@ -153,11 +156,11 @@ public class ReviewService {
                 Photo photo=it.next();
                 //새로운 첨부에도 존재하는지 확인
                 Boolean curExistCheck = false;
-                for (Iterator<UUID> it2 = attachedPhotos.listIterator(); it.hasNext(); ) {
+                for (Iterator<UUID> it2 = attachedPhotos.listIterator(); it2.hasNext(); ) {
                     UUID attachedPhotoId=it2.next();
                     if (photo.getPhotoId().equals(attachedPhotoId)) {
                         //이미 존재하면 추후 추가할 사진에서 제외
-                        //logger.info("둘 다 존재하는 사진:{}",attachedPhotoId);
+                        logger.info("둘 다 존재하는 사진:{}",attachedPhotoId);
                         it2.remove();
                         curExistCheck = true;
                         break;
@@ -165,13 +168,13 @@ public class ReviewService {
                 }
                 if (curExistCheck == false) {
                     //사진이 사라졌다면 remove
-                    //logger.info("삭제될 사진 id:{}", photo.getPhotoId().toString());
+                    logger.info("삭제될 사진 id:{}", photo.getPhotoId().toString());
                     it.remove();
                 }
             }
 
             for (UUID photoId : attachedPhotos) {
-                    //logger.info("추가된 사진 id:{}", photoId);
+                    logger.info("추가된 사진 id:{}", photoId);
                     Photo photo = Photo.createPhoto(photoId, review);
                     review.getPhotos().add(photo);
 

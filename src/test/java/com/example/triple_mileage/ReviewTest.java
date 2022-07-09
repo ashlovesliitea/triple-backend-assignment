@@ -1,6 +1,6 @@
 package com.example.triple_mileage;
 
-import com.example.triple_mileage.domain.*;
+import com.example.triple_mileage.domain.entity.*;
 import com.example.triple_mileage.exception.AlreadyWroteReviewException;
 import com.example.triple_mileage.repository.PlaceRepository;
 import com.example.triple_mileage.repository.PointHistoryRepository;
@@ -207,7 +207,7 @@ public class ReviewTest {
     @Test
     public void reviewI_PointTest(){
         UUID userId=UUID.fromString(userIdStr);
-        int point=pointService.calculatePoint(userId);
+        int point=pointService.calculatePoint(userId).getPoint();
         Assert.assertEquals(0,point);
     }
 
