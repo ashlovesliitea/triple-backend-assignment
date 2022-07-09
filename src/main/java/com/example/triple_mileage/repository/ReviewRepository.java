@@ -1,6 +1,6 @@
 package com.example.triple_mileage.repository;
 
-import com.example.triple_mileage.domain.Review;
+import com.example.triple_mileage.domain.entity.Review;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
