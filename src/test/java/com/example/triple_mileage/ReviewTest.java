@@ -1,0 +1,205 @@
+package com.example.triple_mileage;
+
+import com.example.triple_mileage.domain.*;
+import com.example.triple_mileage.exception.AlreadyWroteReviewException;
+import com.example.triple_mileage.repository.PlaceRepository;
+import com.example.triple_mileage.repository.PointHistoryRepository;
+import com.example.triple_mileage.repository.UserRepository;
+import com.example.triple_mileage.service.ReviewService;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
+import org.junit.FixMethodOrder;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@Transactional
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+@Slf4j
+public class ReviewTest {
+
+    @Autowired
+    ReviewService reviewService;
+
+    @Autowired
+    PlaceRepository placeRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Autowired
+    PointHistoryRepository pointHistoryRepository;
+
+    final String userIdStr="3ede0ef2-92b7-4817-a5f3-0c575361f745";
+    final String placeIdStr="2e4baf1c-5acb-4efb-a1af-eddada31b00f";
+    final String reviewIdStr="240a0658-dc5f-4878-9381-ebb7b2667772";
+
+    Logger logger= LoggerFactory.getLogger(PlaceTest.class);
+
+
+    @Test
+    @Rollback(value = false)
+    public void reviewA_userSave(){
+        User user=new User();
+        String userIdStr="3ede0ef2-92b7-4817-a5f3-0c575361f745";
+        UUID userId=UUID.fromString(userIdStr);
+        user.setUserId(userId);
+        user.setUserName("트리플");
+        userRepository.save(user);
+
+        User findUser=userRepository.findUser(userId);
+        logger.info("저장된 uuid:{}",findUser.getUserId().toString());
+
+        Assert.assertEquals(userId,findUser.getUserId());
+    }
+
+
+    @Test
+    @Rollback(value = false)
+    public void reviewB_placeSave(){
+        Place place=new Place();
+
+        UUID placeId=UUID.fromString(placeIdStr);
+        place.setPlaceId(placeId);
+        place.setPlaceName("신라스테이 강남");
+        placeRepository.save(place);
+
+        Place findPlace=placeRepository.findOne(placeId);
+        logger.info("저장된 uuid:{}",findPlace.getPlaceId().toString());
+
+        Assert.assertEquals(placeId,findPlace.getPlaceId());
+        Assert.assertEquals(0,place.getReviews().size());
+    }
+
+    @Test
+    @Rollback(value = false)
+    public void reviewC_Save() throws AlreadyWroteReviewException {
+        UUID reviewId=UUID.fromString(reviewIdStr);
+        UUID placeId=UUID.fromString(placeIdStr);
+        UUID userId=UUID.fromString(userIdStr);
+
+        String content="좋아요!";
+        List<UUID> attachedPhotos = getAttachedPhotos();
+
+        Place findPlace=placeRepository.findOne(placeId);
+
+        reviewService.saveReview(reviewId,userId,placeId,content,attachedPhotos);
+
+        Review findReview= reviewService.findReview(reviewId);
+
+        int reviewCnt=findReview.getPlace().getReviews().size();
+
+        Assert.assertEquals(1,reviewCnt);
+        Assert.assertEquals(3, findReview.totalPoint());
+
+
+    }
+
+    //리뷰를 두번째로 작성하려고 할 때
+    @Test(expected=AlreadyWroteReviewException.class)
+    @Rollback(value = false)
+    public void reviewD_Save() throws AlreadyWroteReviewException {
+        UUID reviewId=UUID.fromString(reviewIdStr);
+        UUID placeId=UUID.fromString(placeIdStr);
+        UUID userId=UUID.fromString(userIdStr);
+
+        String content="좋아요!";
+        List<UUID> attachedPhotos = getAttachedPhotos();
+
+        reviewService.saveReview(reviewId,userId,placeId,content,attachedPhotos);
+
+    }
+
+    //기존에 있었는데 사진을 모두 삭제한 경우
+    @Test
+    @Rollback(value = false)
+    public void reviewE_Modify1(){
+        UUID reviewId=UUID.fromString(reviewIdStr);
+        List<UUID> emptyPhotoList=new ArrayList<>();
+        reviewService.modifyReview(reviewId,"좋았어요!",emptyPhotoList);
+
+        Review modifiedReview=reviewService.findReview(reviewId);
+        Assert.assertEquals("좋았어요!",modifiedReview.getContent());
+        Assert.assertEquals(0,modifiedReview.getPhotos().size());
+
+    }
+
+    //사진이 없었는데 추가한 경우
+    @Test
+    @Rollback(value = false)
+    public void reviewF_Modify2(){
+        UUID reviewId=UUID.fromString(reviewIdStr);
+        List<UUID> addedPhotoList=getAttachedPhotos();
+        reviewService.modifyReview(reviewId,"좋았어요!",addedPhotoList);
+
+        Review modifiedReview=reviewService.findReview(reviewId);
+        Assert.assertEquals(2,modifiedReview.getPhotos().size());
+        Assert.assertEquals(1,modifiedReview.getPhotoPoint());
+
+    }
+
+
+    //사진을 변경한 경우
+    @Test
+    @Rollback(value = false)
+    public void reviewG_Modify3(){
+        UUID reviewId=UUID.fromString(reviewIdStr);
+        List<UUID> modifiedPhotoList=new ArrayList<>();
+        UUID photoId1=UUID.randomUUID();//기존에 없는 사진
+        logger.info("추가된 id:{}",photoId1.toString());
+        UUID photoId2=UUID.fromString("afb0cef2-851d-4a50-bb07-9cc15cbdc332");//기존에 있는 사진
+        modifiedPhotoList.add(photoId1);
+        modifiedPhotoList.add(photoId2);
+
+        reviewService.modifyReview(reviewId,"좋았어요!",modifiedPhotoList);
+
+        Review modifiedReview=reviewService.findReview(reviewId);
+        List<Photo> modifiedPhotos=modifiedReview.getPhotos();
+        Assert.assertEquals(2,modifiedReview.getPhotos().size());
+        Assert.assertEquals(true,modifiedPhotos.stream().anyMatch(p->p.getPhotoId().equals(photoId1)));
+        Assert.assertEquals(true,modifiedPhotos.stream().anyMatch(p->p.getPhotoId().equals(photoId2)));
+
+    }
+
+    //리뷰 삭제
+    @Test
+    @Rollback(value = false)
+    public void reviewH_DELETE(){
+        UUID reviewId=UUID.fromString(reviewIdStr);
+        reviewService.deleteReview(reviewId);
+        Place place= placeRepository.findOne(UUID.fromString(placeIdStr));
+        User user=userRepository.findUser(UUID.fromString(userIdStr));
+
+        //삭제가 DB에 커밋되기 이전이므로 엔티티에서 찾아야함.
+        List<PointHistory> pointHistories=user.getPointHistories();
+        PointHistory pointHistory=pointHistories.get(pointHistories.size()-1);
+
+        Assert.assertEquals(-3,pointHistory.getChangedPoint());
+        //장소와 유저와 리뷰의 연관관계 끊어졌는지 확인
+        Assert.assertEquals(0,place.getReviews().size());
+        Assert.assertEquals(0,user.getReviewList().size());
+
+    }
+
+    private List<UUID> getAttachedPhotos() {
+        UUID photoId1=UUID.fromString("e4d1a64e-a531-46de-88d0-ff0ed70c0bb8");
+        UUID photoId2=UUID.fromString("afb0cef2-851d-4a50-bb07-9cc15cbdc332");
+        List<UUID> attachedPhotos=new ArrayList<>();
+        attachedPhotos.add(photoId1);
+        attachedPhotos.add(photoId2);
+        return attachedPhotos;
+    }
+}

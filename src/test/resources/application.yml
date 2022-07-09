@@ -1,0 +1,25 @@
+spring:
+  datasource: #TESTDB 환경 분리 -> 스키마 이름만 다르고 DDL은 동일
+    url: jdbc:mysql://database-1.csmh5vzvstef.ap-northeast-2.rds.amazonaws.com:3306/mileageTest?autoReconnect=true #TODO:낼 때는 로컬 디비로 바꿔서 낼것
+    username: admin
+    password: capstonedb
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: false
+    show-sql: true
+    hibernate:
+      format_sql: true
+      ddl-auto: create
+
+
+logging:
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
