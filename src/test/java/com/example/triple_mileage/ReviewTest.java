@@ -5,6 +5,7 @@ import com.example.triple_mileage.exception.AlreadyWroteReviewException;
 import com.example.triple_mileage.repository.PlaceRepository;
 import com.example.triple_mileage.repository.PointHistoryRepository;
 import com.example.triple_mileage.repository.UserRepository;
+import com.example.triple_mileage.service.PointService;
 import com.example.triple_mileage.service.ReviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -31,6 +32,11 @@ import java.util.UUID;
 @Slf4j
 public class ReviewTest {
 
+    //해당 Test 실행시에는 시나리오상 전체 테스트를 순서대로 실행해야 함
+    /*
+      유저 생성->장소 생성->리뷰 생성->같은 장소에 또 리뷰 생성(예외 발생)
+      ->리뷰사진 전체삭제(사진 점수 회수)->사진 없는 리뷰에 사진 추가(사진 점수 추가)->사진 변경->리뷰 삭제->포인트 총점 계산
+     */
     @Autowired
     ReviewService reviewService;
 
@@ -42,6 +48,9 @@ public class ReviewTest {
 
     @Autowired
     PointHistoryRepository pointHistoryRepository;
+
+    @Autowired
+    PointService pointService;
 
     final String userIdStr="3ede0ef2-92b7-4817-a5f3-0c575361f745";
     final String placeIdStr="2e4baf1c-5acb-4efb-a1af-eddada31b00f";
@@ -86,7 +95,7 @@ public class ReviewTest {
 
     @Test
     @Rollback(value = false)
-    public void reviewC_Save() throws AlreadyWroteReviewException {
+    public void reviewC_reviewSave() throws AlreadyWroteReviewException {
         UUID reviewId=UUID.fromString(reviewIdStr);
         UUID placeId=UUID.fromString(placeIdStr);
         UUID userId=UUID.fromString(userIdStr);
@@ -108,10 +117,10 @@ public class ReviewTest {
 
     }
 
-    //리뷰를 두번째로 작성하려고 할 때
+    //리뷰를 중복작성하려고 할 때
     @Test(expected=AlreadyWroteReviewException.class)
     @Rollback(value = false)
-    public void reviewD_Save() throws AlreadyWroteReviewException {
+    public void reviewD_reviewDuplicateSave() throws AlreadyWroteReviewException {
         UUID reviewId=UUID.fromString(reviewIdStr);
         UUID placeId=UUID.fromString(placeIdStr);
         UUID userId=UUID.fromString(userIdStr);
@@ -192,6 +201,14 @@ public class ReviewTest {
         Assert.assertEquals(0,place.getReviews().size());
         Assert.assertEquals(0,user.getReviewList().size());
 
+    }
+
+    //포인트 총점 조회
+    @Test
+    public void reviewI_PointTest(){
+        UUID userId=UUID.fromString(userIdStr);
+        int point=pointService.calculatePoint(userId);
+        Assert.assertEquals(0,point);
     }
 
     private List<UUID> getAttachedPhotos() {
