@@ -1,9 +1,7 @@
 package com.example.triple_mileage;
 
-import com.example.triple_mileage.domain.Place;
-import com.example.triple_mileage.domain.User;
+import com.example.triple_mileage.domain.entity.Place;
 import com.example.triple_mileage.repository.PlaceRepository;
-import com.example.triple_mileage.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
