@@ -1,5 +1,6 @@
 package com.example.triple_mileage.domain.entity;
 
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 public class Photo {
     @Id
     @Column(columnDefinition = "BINARY(16)")
+    @NotNull
     private UUID photoId;
 
     @ManyToOne(fetch= FetchType.LAZY)
