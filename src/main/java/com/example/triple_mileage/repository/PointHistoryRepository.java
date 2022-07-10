@@ -1,7 +1,6 @@
 package com.example.triple_mileage.repository;
 
 import com.example.triple_mileage.domain.entity.PointHistory;
-import com.example.triple_mileage.response.PointDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

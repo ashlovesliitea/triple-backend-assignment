@@ -1,6 +1,7 @@
 package com.example.triple_mileage.domain.entity;
 
 import com.example.triple_mileage.domain.PointSituation;
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,16 +16,22 @@ public class PointHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull
     private Long pointId;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="user_id")
     private User user;
 
+    @NotNull
     private int changedPoint; //포인트 증감 내역
 
+    @NotNull
     private PointSituation pointSituation;
 
+
+    @Column(columnDefinition = "TIMESTAMP")
+    @NotNull
     private ZonedDateTime date;
 
 

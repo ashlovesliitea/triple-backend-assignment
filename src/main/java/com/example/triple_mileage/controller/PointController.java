@@ -1,6 +1,6 @@
 package com.example.triple_mileage.controller;
 
-import com.example.triple_mileage.response.PointDTO;
+import com.example.triple_mileage.dto.PointDto;
 import com.example.triple_mileage.response.ResponseObj;
 import com.example.triple_mileage.service.PointService;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +19,8 @@ public class PointController {
 
     @ResponseBody
     @GetMapping("/point-calculate")
-    public ResponseObj<PointDTO> createPlace(@RequestParam(value="user-id") String userId){
-        PointDTO point =pointService.calculatePoint(UUID.fromString(userId));
+    public ResponseObj<PointDto> createPlace(@RequestParam(value="user-id") String userId){
+        PointDto point =pointService.calculatePoint(userId);
         return new ResponseObj<>(point);
     }
 }
