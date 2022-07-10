@@ -17,7 +17,8 @@
 - 유저 포인트 조회 `(/users/:userId/total-point)`
     - 현재까지 포인트이력을 조회해서 유저 포인트의 총합을 계산합니다.
  <br>
-- API 설명, 사용방법, request/response 구성, 다양한 example은 옆 문서를 참고해주세요! -> [API 명세서 링크](https://documenter.getpostman.com/view/19267267/UzJPMajr)
+- API 설명, 사용방법, request/response 구성, 다양한 example은 아래 문서를 참고해주세요! 
+    - [API 명세서 링크](https://documenter.getpostman.com/view/19267267/UzJPMajr)
 
 ## 3. ER Diagram
 ![image](https://user-images.githubusercontent.com/65891711/178157283-ab0afad8-4ff5-4007-ad8d-928eb08ece1c.png)
@@ -40,7 +41,8 @@
    mysql -u root -p
    ```
 4. 테이블을 생성하기 위해 아래 DDL을 실행시켜 줍니다.
-    ```create database mileage;
+    ```
+   create database mileage;
     
     use mileage;
     
