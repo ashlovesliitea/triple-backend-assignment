@@ -2,6 +2,8 @@ package com.example.triple_mileage.service;
 
 import com.example.triple_mileage.domain.*;
 import com.example.triple_mileage.domain.entity.*;
+import com.example.triple_mileage.dto.ReviewModifyDto;
+import com.example.triple_mileage.dto.ReviewSaveDto;
 import com.example.triple_mileage.exception.AlreadyWroteReviewException;
 import com.example.triple_mileage.repository.PhotoRepository;
 import com.example.triple_mileage.repository.PlaceRepository;
@@ -34,24 +36,25 @@ public class ReviewService {
 
     /**
      * 리뷰 작성
-     * @param reviewId
-     * @param userId
-     * @param placeId
-     * @param content
-     * @param attachedPhotos
      * @throws AlreadyWroteReviewException
      */
     @Transactional
-    public void saveReview(UUID reviewId, UUID userId, UUID placeId,
-                           String content, List<UUID> attachedPhotos) throws AlreadyWroteReviewException {
+    public void saveReview(ReviewSaveDto reviewSaveDto) throws AlreadyWroteReviewException {
 
+        UUID reviewId=UUID.fromString(reviewSaveDto.getReviewId());
+        String content=reviewSaveDto.getContent();
+        UUID userId=UUID.fromString(reviewSaveDto.getUserId());
+        UUID placeId=UUID.fromString(reviewSaveDto.getPlaceId());
+        List<UUID> attachedPhotos=new ArrayList<>();
+        for(String id:reviewSaveDto.getAttachedPhotoIds()){
+            attachedPhotos.add(UUID.fromString(id));
+        }
 
         Review review = new Review();
 
-
         //리뷰 id, 컨텐츠, 사진 set
         review.setReviewId(reviewId);
-        review.setContent(content);
+        review.setContent(reviewSaveDto.getContent());
         review.setDate(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
 
         for(UUID photoId:attachedPhotos){
@@ -96,21 +99,24 @@ public class ReviewService {
      * @return
      */
 
-    public Review findReview(UUID reviewId){
-        return reviewRepository.findOne(reviewId);
+    public Review findReview(String reviewId){
+        return reviewRepository.findOne(UUID.fromString(reviewId));
     }
 
     /**
-     * 리뷰 수정 (사진 or 사진)
-     * @param reviewId
-     * @param content
-     * @param attachedPhotos
+     * 리뷰 수정 (내용 or 사진)
      */
 
     @Transactional
-    public void modifyReview(UUID reviewId,String content,List<UUID> attachedPhotos){
+    public void modifyReview(ReviewModifyDto reviewModifyDto){
+        UUID reviewId=UUID.fromString(reviewModifyDto.getReviewId());
+        String content=reviewModifyDto.getContent();
+        List <UUID> attachedPhotos=new ArrayList<>();
+        for(String photoId: reviewModifyDto.getAttachedPhotoIds()){
+            attachedPhotos.add(UUID.fromString(photoId));
+        }
 
-        Review review=findReview(reviewId);
+        Review review=findReview(reviewModifyDto.getReviewId());
         User user= review.getUser();
 
         review.setDate(ZonedDateTime.now(ZoneId.of("Asia/Seoul")));
@@ -164,7 +170,7 @@ public class ReviewService {
                     }
                 }
                 if (curExistCheck == false) {
-                    //사진이 사라졌다면 remove
+                    //사진이 사라졌다면 기존 사진 리스트에서 remove
                     logger.info("삭제될 사진 id:{}", photo.getPhotoId().toString());
                     it.remove();
                 }
@@ -185,11 +191,12 @@ public class ReviewService {
 
     /**
      * 리뷰 삭제
-     * @param reviewId
+     * @param reviewIdStr
      */
     @Transactional
-    public void deleteReview(UUID reviewId){
+    public void deleteReview(String reviewIdStr){
 
+        UUID reviewId=UUID.fromString(reviewIdStr);
         Review review=reviewRepository.findOne(reviewId);
 
         //포인트 회수

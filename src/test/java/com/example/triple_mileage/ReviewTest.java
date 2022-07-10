@@ -1,6 +1,8 @@
 package com.example.triple_mileage;
 
 import com.example.triple_mileage.domain.entity.*;
+import com.example.triple_mileage.dto.ReviewModifyDto;
+import com.example.triple_mileage.dto.ReviewSaveDto;
 import com.example.triple_mileage.exception.AlreadyWroteReviewException;
 import com.example.triple_mileage.repository.PlaceRepository;
 import com.example.triple_mileage.repository.PointHistoryRepository;
@@ -98,20 +100,20 @@ public class ReviewTest {
     public void reviewC_reviewSave() throws AlreadyWroteReviewException {
         UUID reviewId=UUID.fromString(reviewIdStr);
         UUID placeId=UUID.fromString(placeIdStr);
-        UUID userId=UUID.fromString(userIdStr);
 
         String content="좋아요!";
-        List<UUID> attachedPhotos = getAttachedPhotos();
+        List<String> attachedPhotos = getAttachedPhotos();
 
+
+
+        reviewService.saveReview(new ReviewSaveDto(reviewIdStr,userIdStr,placeIdStr,content,attachedPhotos));
+
+        Review findReview= reviewService.findReview(reviewIdStr);
         Place findPlace=placeRepository.findOne(placeId);
-
-        reviewService.saveReview(reviewId,userId,placeId,content,attachedPhotos);
-
-        Review findReview= reviewService.findReview(reviewId);
-
         int reviewCnt=findReview.getPlace().getReviews().size();
 
         Assert.assertEquals(1,reviewCnt);
+        Assert.assertEquals(1,findPlace.getReviews().size());
         Assert.assertEquals(3, findReview.totalPoint());
 
 
@@ -126,9 +128,9 @@ public class ReviewTest {
         UUID userId=UUID.fromString(userIdStr);
 
         String content="좋아요!";
-        List<UUID> attachedPhotos = getAttachedPhotos();
+        List<String> attachedPhotos = getAttachedPhotos();
 
-        reviewService.saveReview(reviewId,userId,placeId,content,attachedPhotos);
+        reviewService.saveReview(new ReviewSaveDto(reviewIdStr,userIdStr,placeIdStr,content,attachedPhotos));
 
     }
 
@@ -136,11 +138,10 @@ public class ReviewTest {
     @Test
     @Rollback(value = false)
     public void reviewE_Modify1(){
-        UUID reviewId=UUID.fromString(reviewIdStr);
-        List<UUID> emptyPhotoList=new ArrayList<>();
-        reviewService.modifyReview(reviewId,"좋았어요!",emptyPhotoList);
+        List<String> emptyPhotoList=new ArrayList<>();
+        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",emptyPhotoList));
 
-        Review modifiedReview=reviewService.findReview(reviewId);
+        Review modifiedReview=reviewService.findReview(reviewIdStr);
         Assert.assertEquals("좋았어요!",modifiedReview.getContent());
         Assert.assertEquals(0,modifiedReview.getPhotos().size());
 
@@ -150,11 +151,11 @@ public class ReviewTest {
     @Test
     @Rollback(value = false)
     public void reviewF_Modify2(){
-        UUID reviewId=UUID.fromString(reviewIdStr);
-        List<UUID> addedPhotoList=getAttachedPhotos();
-        reviewService.modifyReview(reviewId,"좋았어요!",addedPhotoList);
 
-        Review modifiedReview=reviewService.findReview(reviewId);
+        List<String> addedPhotoList=getAttachedPhotos();
+        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",addedPhotoList));
+
+        Review modifiedReview=reviewService.findReview(reviewIdStr);
         Assert.assertEquals(2,modifiedReview.getPhotos().size());
         Assert.assertEquals(1,modifiedReview.getPhotoPoint());
 
@@ -166,20 +167,20 @@ public class ReviewTest {
     @Rollback(value = false)
     public void reviewG_Modify3(){
         UUID reviewId=UUID.fromString(reviewIdStr);
-        List<UUID> modifiedPhotoList=new ArrayList<>();
-        UUID photoId1=UUID.randomUUID();//기존에 없는 사진
+        List<String> modifiedPhotoList=new ArrayList<>();
+        String photoId1=UUID.randomUUID().toString();//기존에 없는 사진
         logger.info("추가된 id:{}",photoId1.toString());
-        UUID photoId2=UUID.fromString("afb0cef2-851d-4a50-bb07-9cc15cbdc332");//기존에 있는 사진
+        String photoId2="afb0cef2-851d-4a50-bb07-9cc15cbdc332";//기존에 있는 사진
         modifiedPhotoList.add(photoId1);
         modifiedPhotoList.add(photoId2);
 
-        reviewService.modifyReview(reviewId,"좋았어요!",modifiedPhotoList);
+        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",modifiedPhotoList));
 
-        Review modifiedReview=reviewService.findReview(reviewId);
+        Review modifiedReview=reviewService.findReview(reviewIdStr);
         List<Photo> modifiedPhotos=modifiedReview.getPhotos();
         Assert.assertEquals(2,modifiedReview.getPhotos().size());
-        Assert.assertEquals(true,modifiedPhotos.stream().anyMatch(p->p.getPhotoId().equals(photoId1)));
-        Assert.assertEquals(true,modifiedPhotos.stream().anyMatch(p->p.getPhotoId().equals(photoId2)));
+        Assert.assertEquals(true,modifiedPhotos.stream().anyMatch(p->p.getPhotoId().equals(UUID.fromString(photoId1))));
+        Assert.assertEquals(true,modifiedPhotos.stream().anyMatch(p->p.getPhotoId().equals(UUID.fromString(photoId2))));
 
     }
 
@@ -187,8 +188,7 @@ public class ReviewTest {
     @Test
     @Rollback(value = false)
     public void reviewH_DELETE(){
-        UUID reviewId=UUID.fromString(reviewIdStr);
-        reviewService.deleteReview(reviewId);
+        reviewService.deleteReview(reviewIdStr);
         Place place= placeRepository.findOne(UUID.fromString(placeIdStr));
         User user=userRepository.findUser(UUID.fromString(userIdStr));
 
@@ -206,15 +206,14 @@ public class ReviewTest {
     //포인트 총점 조회
     @Test
     public void reviewI_PointTest(){
-        UUID userId=UUID.fromString(userIdStr);
-        int point=pointService.calculatePoint(userId).getPoint();
+        int point=pointService.calculatePoint(userIdStr).getUserTotalPoint();
         Assert.assertEquals(0,point);
     }
 
-    private List<UUID> getAttachedPhotos() {
-        UUID photoId1=UUID.fromString("e4d1a64e-a531-46de-88d0-ff0ed70c0bb8");
-        UUID photoId2=UUID.fromString("afb0cef2-851d-4a50-bb07-9cc15cbdc332");
-        List<UUID> attachedPhotos=new ArrayList<>();
+    private List<String> getAttachedPhotos() {
+        String photoId1="e4d1a64e-a531-46de-88d0-ff0ed70c0bb8";
+        String photoId2="afb0cef2-851d-4a50-bb07-9cc15cbdc332";
+        List<String> attachedPhotos=new ArrayList<>();
         attachedPhotos.add(photoId1);
         attachedPhotos.add(photoId2);
         return attachedPhotos;
