@@ -1,6 +1,6 @@
 spring:
   datasource: #TESTDB 환경 분리 -> 스키마 이름만 다르고 DDL은 동일
-    url: jdbc:mysql://localhost:3306/mileageTest?autoReconnect=true
+    url: jdbc:mysql://mysql-container:3306/mileageTest?autoReconnect=true
     username: root
     password: 1234
     driver-class-name: com.mysql.cj.jdbc.Driver
