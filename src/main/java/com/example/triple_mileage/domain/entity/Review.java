@@ -1,11 +1,13 @@
 package com.example.triple_mileage.domain.entity;
 
-import com.sun.istack.NotNull;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +32,7 @@ public class Review {
     private Place place;
 
     @Column(columnDefinition = "TEXT")
-    @NotNull
+    @NotBlank
     private String content;
 
     @OneToMany(mappedBy = "review", cascade = CascadeType.ALL,orphanRemoval = true)
@@ -61,7 +63,7 @@ public class Review {
 
     public void setPlace(Place place){
         this.place=place;
-        place.getReviews().add(this);
+        place.getReviewList().add(this);
     }
 
 

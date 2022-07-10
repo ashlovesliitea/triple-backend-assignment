@@ -1,4 +1,4 @@
-package com.example.triple_mileage.dto;
+package com.example.triple_mileage.dto.review;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,6 +12,7 @@ import java.util.List;
 public class ReviewModifyDto {
     private String reviewId;
     private String content;
+    private String userId;
     private List<String> attachedPhotoIds;
 
 }

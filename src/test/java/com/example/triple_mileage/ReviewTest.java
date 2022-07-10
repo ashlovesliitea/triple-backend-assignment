@@ -1,14 +1,18 @@
 package com.example.triple_mileage;
 
 import com.example.triple_mileage.domain.entity.*;
-import com.example.triple_mileage.dto.ReviewModifyDto;
-import com.example.triple_mileage.dto.ReviewSaveDto;
+import com.example.triple_mileage.dto.review.ReviewDeleteDto;
+import com.example.triple_mileage.dto.review.ReviewModifyDto;
+import com.example.triple_mileage.dto.review.ReviewSaveDto;
 import com.example.triple_mileage.exception.AlreadyWroteReviewException;
+import com.example.triple_mileage.exception.InvalidUserException;
 import com.example.triple_mileage.repository.PlaceRepository;
 import com.example.triple_mileage.repository.PointHistoryRepository;
 import com.example.triple_mileage.repository.UserRepository;
+import com.example.triple_mileage.service.PlaceService;
 import com.example.triple_mileage.service.PointService;
 import com.example.triple_mileage.service.ReviewService;
+import com.example.triple_mileage.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
@@ -37,10 +41,17 @@ public class ReviewTest {
     //해당 Test 실행시에는 시나리오상 전체 테스트를 순서대로 실행해야 함
     /*
       유저 생성->장소 생성->리뷰 생성->같은 장소에 또 리뷰 생성(예외 발생)
-      ->리뷰사진 전체삭제(사진 점수 회수)->사진 없는 리뷰에 사진 추가(사진 점수 추가)->사진 변경->리뷰 삭제->포인트 총점 계산
+      ->리뷰사진 전체삭제(사진 점수 회수)->사진 없는 리뷰에 사진 추가(사진 점수 추가)->사진 변경
+      ->장소 삭제->리뷰 삭제->포인트 총점 계산->유저 삭제
      */
     @Autowired
     ReviewService reviewService;
+
+    @Autowired
+    PlaceService placeService;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     PlaceRepository placeRepository;
@@ -92,7 +103,7 @@ public class ReviewTest {
         logger.info("저장된 uuid:{}",findPlace.getPlaceId().toString());
 
         Assert.assertEquals(placeId,findPlace.getPlaceId());
-        Assert.assertEquals(0,place.getReviews().size());
+        Assert.assertEquals(0,place.getReviewList().size());
     }
 
     @Test
@@ -110,10 +121,10 @@ public class ReviewTest {
 
         Review findReview= reviewService.findReview(reviewIdStr);
         Place findPlace=placeRepository.findOne(placeId);
-        int reviewCnt=findReview.getPlace().getReviews().size();
+        int reviewCnt=findReview.getPlace().getReviewList().size();
 
         Assert.assertEquals(1,reviewCnt);
-        Assert.assertEquals(1,findPlace.getReviews().size());
+        Assert.assertEquals(1,findPlace.getReviewList().size());
         Assert.assertEquals(3, findReview.totalPoint());
 
 
@@ -137,9 +148,9 @@ public class ReviewTest {
     //기존에 있었는데 사진을 모두 삭제한 경우
     @Test
     @Rollback(value = false)
-    public void reviewE_Modify1(){
+    public void reviewE_Modify1() throws InvalidUserException {
         List<String> emptyPhotoList=new ArrayList<>();
-        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",emptyPhotoList));
+        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",userIdStr,emptyPhotoList));
 
         Review modifiedReview=reviewService.findReview(reviewIdStr);
         Assert.assertEquals("좋았어요!",modifiedReview.getContent());
@@ -150,10 +161,10 @@ public class ReviewTest {
     //사진이 없었는데 추가한 경우
     @Test
     @Rollback(value = false)
-    public void reviewF_Modify2(){
+    public void reviewF_Modify2() throws InvalidUserException {
 
         List<String> addedPhotoList=getAttachedPhotos();
-        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",addedPhotoList));
+        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",userIdStr,addedPhotoList));
 
         Review modifiedReview=reviewService.findReview(reviewIdStr);
         Assert.assertEquals(2,modifiedReview.getPhotos().size());
@@ -165,7 +176,7 @@ public class ReviewTest {
     //사진을 변경한 경우
     @Test
     @Rollback(value = false)
-    public void reviewG_Modify3(){
+    public void reviewG_Modify3() throws InvalidUserException {
         UUID reviewId=UUID.fromString(reviewIdStr);
         List<String> modifiedPhotoList=new ArrayList<>();
         String photoId1=UUID.randomUUID().toString();//기존에 없는 사진
@@ -174,7 +185,7 @@ public class ReviewTest {
         modifiedPhotoList.add(photoId1);
         modifiedPhotoList.add(photoId2);
 
-        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",modifiedPhotoList));
+        reviewService.modifyReview(new ReviewModifyDto(reviewIdStr,"좋았어요!",userIdStr,modifiedPhotoList));
 
         Review modifiedReview=reviewService.findReview(reviewIdStr);
         List<Photo> modifiedPhotos=modifiedReview.getPhotos();
@@ -184,11 +195,20 @@ public class ReviewTest {
 
     }
 
+    //장소 삭제
+    @Test(expected=NullPointerException.class)
+    public void reviewH_placeRemove(){
+        placeService.removePlace(placeIdStr);
+        Review review= reviewService.findReview(reviewIdStr);
+        review.getPlace();
+    }
+
+
     //리뷰 삭제
     @Test
     @Rollback(value = false)
-    public void reviewH_DELETE(){
-        reviewService.deleteReview(reviewIdStr);
+    public void reviewI_DELETE() throws InvalidUserException {
+        reviewService.deleteReview(new ReviewDeleteDto(userIdStr,reviewIdStr));
         Place place= placeRepository.findOne(UUID.fromString(placeIdStr));
         User user=userRepository.findUser(UUID.fromString(userIdStr));
 
@@ -198,17 +218,27 @@ public class ReviewTest {
 
         Assert.assertEquals(-3,pointHistory.getChangedPoint());
         //장소와 유저와 리뷰의 연관관계 끊어졌는지 확인
-        Assert.assertEquals(0,place.getReviews().size());
+        Assert.assertEquals(0,place.getReviewList().size());
         Assert.assertEquals(0,user.getReviewList().size());
 
     }
 
     //포인트 총점 조회
     @Test
-    public void reviewI_PointTest(){
+    public void reviewJ_PointTest(){
         int point=pointService.calculatePoint(userIdStr).getUserTotalPoint();
         Assert.assertEquals(0,point);
     }
+
+
+    //유저 삭제
+    @Test(expected = NullPointerException.class)
+    public void reviewK_userRemove(){
+        userService.removeUser(userIdStr);
+        PointHistory pointHistory=pointHistoryRepository.findOne(Long.valueOf(4));
+        logger.info("user가 삭제되므로 모든 포인트 기록도 사라졌으니 null이 나와야 함:{}",pointHistory.getChangedPoint());
+    }
+
 
     private List<String> getAttachedPhotos() {
         String photoId1="e4d1a64e-a531-46de-88d0-ff0ed70c0bb8";
