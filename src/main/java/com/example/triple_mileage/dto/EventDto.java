@@ -1,20 +1,16 @@
-package com.example.triple_mileage.request;
+package com.example.triple_mileage.dto;
 
-import com.example.triple_mileage.domain.Action;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
-public class EventDTO {
+public class EventDto {
     @NotBlank(message = "시행할 이벤트 타입을 추가해주세요!")
     private String type;
 
