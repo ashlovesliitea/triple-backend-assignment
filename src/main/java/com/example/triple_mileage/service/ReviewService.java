@@ -11,11 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.validation.constraints.Null;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -47,6 +44,7 @@ public class ReviewService {
     @Transactional
     public void saveReview(UUID reviewId, UUID userId, UUID placeId,
                            String content, List<UUID> attachedPhotos) throws AlreadyWroteReviewException {
+
 
         Review review = new Review();
 
@@ -82,7 +80,6 @@ public class ReviewService {
 
         //보너스 점수 확인 - place의 review 리스트가 비었는지 확인
         review.setBonusPoint((place.getReviews().size()==0)?1:0);
-
         review.setUser(user);
         review.setPlace(place);
 

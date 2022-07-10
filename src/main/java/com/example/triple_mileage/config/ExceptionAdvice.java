@@ -1,19 +1,19 @@
 package com.example.triple_mileage.config;
 
 //import com.example.triple_mileage.response.ResponseException;
+import com.example.triple_mileage.exception.AlreadyWroteReviewException;
 import com.example.triple_mileage.response.ResponseObj;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.nio.charset.MalformedInputException;
-import java.security.GeneralSecurityException;
-import java.sql.SQLException;
 
 import static com.example.triple_mileage.response.ResponseStatusCode.*;
 
@@ -33,18 +33,22 @@ public class ExceptionAdvice {
                 .getDefaultMessage();
     }
 
-    @ExceptionHandler(value= {DataAccessException.class})
-    public ResponseObj DataAccessExceptionHandler(){
-        //db관련 exception
-        return new ResponseObj(DATA_NOT_FOUND);
+
+
+    @ExceptionHandler(value = {DataIntegrityViolationException.class})
+    public ResponseObj AlreadyExistsExceptionHandler(){
+        return new ResponseObj(EXISTING_DATA);
     }
 
-
+    @ExceptionHandler(value = {AlreadyWroteReviewException.class})
+    public ResponseObj AlreadyWroteReview(){
+        return new ResponseObj(ALREADY_WROTE_REVIEW);
+    }
 
     @ExceptionHandler(value= {NullPointerException.class,Exception.class})
-    public void EtcExceptionHandler(Exception e){
+    public ResponseObj EtcExceptionHandler(Exception e){
 
-        System.err.println(e);
+        return new ResponseObj(DATABASE_ERROR);
     }
 
 }

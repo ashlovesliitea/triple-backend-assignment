@@ -5,7 +5,6 @@ import com.example.triple_mileage.domain.EventType;
 import com.example.triple_mileage.exception.AlreadyWroteReviewException;
 import com.example.triple_mileage.request.EventDTO;
 import com.example.triple_mileage.response.ResponseObj;
-import com.example.triple_mileage.response.ResponseStatusCode;
 import com.example.triple_mileage.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -42,7 +39,7 @@ public class ReviewController {
         }
 
         //TODO: Enum Type Validation 추가
-        if(eventDTO.getType()!= EventType.REVIEW.getValue()) {
+        if(eventDTO.getType().equals(EventType.REVIEW.getValue())){
             String action = eventDTO.getAction();
             if (action.equals(Action.MOD.getValue())) {
                 reviewService.modifyReview(reviewId,

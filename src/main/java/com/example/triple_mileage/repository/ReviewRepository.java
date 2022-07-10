@@ -1,6 +1,7 @@
 package com.example.triple_mileage.repository;
 
 import com.example.triple_mileage.domain.entity.Review;
+import com.example.triple_mileage.domain.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -21,6 +22,7 @@ public class ReviewRepository {
         return em.find(Review.class,reviewId);
 
     }
+
 
     public void remove(Review review) {
         em.remove(review);

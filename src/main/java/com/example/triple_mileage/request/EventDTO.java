@@ -15,6 +15,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 public class EventDTO {
+    @NotBlank(message = "시행할 이벤트 타입을 추가해주세요!")
     private String type;
 
     @NotBlank(message = "리뷰 관리시 수행할 행동을 지정해주세요!")
