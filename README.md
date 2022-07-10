@@ -1,12 +1,12 @@
-#Triple Mileage Service - Assignment
+# Triple Mileage Service - Assignment
 - 해당 프로젝트는 트리플 Tour&Activity 백엔드 엔지니어 부문 과제를 수행한 내용입니다.
 
-##1. 사용 스택
+## 1. 사용 스택
 - Spring Boot & JPA
 - MySQL
 - Docker
 
-##2. API 구성
+## 2. API 구성
 - 유저 추가 API `(/users)`
 - 장소 추가 API `(/places)`
     - 원활한 실행을 위해서 유저와 장소를 반드시 추가해주시고 Event API를 실행해주세요!
@@ -19,11 +19,11 @@
  <br>
 - API 설명, 사용방법, request/response 구성, 다양한 example은 옆 문서를 참고해주세요! -> [API 명세서 링크](https://documenter.getpostman.com/view/19267267/UzJPMajr)
 
-##3. ER Diagram
+## 3. ER Diagram
 ![image](https://user-images.githubusercontent.com/65891711/178157283-ab0afad8-4ff5-4007-ad8d-928eb08ece1c.png)
 
 
-##4. 실행방법
+## 4. 실행방법
 ** 반드시 순서대로 실행해야 하며, 모든 과정은 도커가 설치되어있다는 가정 하에 진행합니다.
 1. 터미널을 통해서 도커의 MySQL 이미지를 다운받습니다.
     ```
