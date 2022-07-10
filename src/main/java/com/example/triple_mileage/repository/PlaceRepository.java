@@ -18,7 +18,11 @@ public class PlaceRepository {
 
     public Place findOne(UUID id){
         return em.find(Place.class,id);
+    }
 
+    public void removePlace(Place place){
+
+        em.remove(place);
     }
 
 }

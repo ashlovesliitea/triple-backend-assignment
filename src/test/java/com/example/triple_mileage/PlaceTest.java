@@ -25,27 +25,26 @@ public class PlaceTest {
     @Autowired
     PlaceRepository placeRepository;
 
-    final String placeIdStr="2e4baf1c-5acb-4efb-a1af-eddada31b00f";
+    final String placeIdStr = "2e4baf1c-5acb-4efb-a1af-eddada31b00f";
 
-    Logger logger= LoggerFactory.getLogger(PlaceTest.class);
+    Logger logger = LoggerFactory.getLogger(PlaceTest.class);
 
     @Test
     @Rollback(value = false)
-    public void placeSaveTest(){
-        Place place=new Place();
+    public void placeSaveTest() {
+        Place place = new Place();
 
-        UUID placeId=UUID.fromString(placeIdStr);
+        UUID placeId = UUID.fromString(placeIdStr);
         place.setPlaceId(placeId);
         place.setPlaceName("신라스테이 강남");
         placeRepository.save(place);
 
-        Place findPlace=placeRepository.findOne(placeId);
-        logger.info("저장된 uuid:{}",findPlace.getPlaceId().toString());
+        Place findPlace = placeRepository.findOne(placeId);
+        logger.info("저장된 uuid:{}", findPlace.getPlaceId().toString());
 
-        Assert.assertEquals(placeId,findPlace.getPlaceId());
-        Assert.assertEquals(0,place.getReviews().size());
+        Assert.assertEquals(placeId, findPlace.getPlaceId());
+        Assert.assertEquals(0, place.getReviewList().size());
     }
-
 
 
 }

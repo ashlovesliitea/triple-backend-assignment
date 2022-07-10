@@ -2,6 +2,7 @@ package com.example.triple_mileage.config;
 
 //import com.example.triple_mileage.response.ResponseException;
 import com.example.triple_mileage.exception.AlreadyWroteReviewException;
+import com.example.triple_mileage.exception.InvalidUserException;
 import com.example.triple_mileage.response.ResponseObj;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -37,6 +38,11 @@ public class ExceptionAdvice {
     @ExceptionHandler(value = {AlreadyWroteReviewException.class})
     public ResponseObj AlreadyWroteReview(){
         return new ResponseObj(ALREADY_WROTE_REVIEW);
+    }
+
+    @ExceptionHandler(value = {InvalidUserException.class})
+    public ResponseObj InvalidUserAccess(){
+        return new ResponseObj(INVALID_USER_ACCESS);
     }
 
     @ExceptionHandler(value= {NullPointerException.class,Exception.class})

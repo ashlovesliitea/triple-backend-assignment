@@ -1,4 +1,4 @@
-package com.example.triple_mileage.dto;
+package com.example.triple_mileage.dto.place;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
