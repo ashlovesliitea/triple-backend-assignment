@@ -1,7 +1,6 @@
 package com.example.triple_mileage.domain.entity;
 
-import com.example.triple_mileage.domain.entity.PointHistory;
-import com.example.triple_mileage.domain.entity.Review;
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,11 +15,14 @@ public class User {
 
     @Id
     @Column(columnDefinition = "BINARY(16)")
+    @NotNull
     private UUID userId;
 
+    @Column(length = 10)
+    @NotNull
     private String userName;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user")
     private List<Review> reviewList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,orphanRemoval = true)

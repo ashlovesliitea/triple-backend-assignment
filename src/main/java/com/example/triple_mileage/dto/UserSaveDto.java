@@ -1,4 +1,4 @@
-package com.example.triple_mileage.request;
+package com.example.triple_mileage.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,9 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class UserDTO {
-
+public class UserSaveDto {
     private String userId;
-
     private String userName;
 }
