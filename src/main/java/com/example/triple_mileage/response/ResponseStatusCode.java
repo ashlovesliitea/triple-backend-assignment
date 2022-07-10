@@ -19,6 +19,7 @@ public enum ResponseStatusCode {
     INVALID_REVIEW_ACTION(false,2001,"리뷰 관리시 할 수 없는 행위입니다."),
     INVALID_EVENT_TYPE(false,2002,"부적절한 이벤트 타입입니다."),
     ALREADY_WROTE_REVIEW(false,2003,"이미 리뷰를 작성한 적이 있습니다!"),
+    INVALID_USER_ACCESS(false,2004,"올바르지 못한 유저의 접근입니다."),
 
     /**
      * 3000 : Response 오류
@@ -31,7 +32,7 @@ public enum ResponseStatusCode {
     /**
      * 4000 : Database, Server 오류
      */
-    DATABASE_ERROR(false, 4000, "데이터베이스 연결에 실패하였습니다."),
+    DATABASE_ERROR(false, 4000, "데이터베이스를 찾을 수 없습니다."),
     SERVER_ERROR(false, 4001, "서버와의 연결에 실패하였습니다."),
     DATA_NOT_FOUND(false,4002,"해당 데이터가 존재하지 않습니다."),
     EXISTING_DATA(false,4003,"이미 존재하는 데이터입니다.");

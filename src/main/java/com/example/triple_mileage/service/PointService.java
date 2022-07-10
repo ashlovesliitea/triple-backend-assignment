@@ -1,6 +1,6 @@
 package com.example.triple_mileage.service;
 
-import com.example.triple_mileage.dto.PointDto;
+import com.example.triple_mileage.dto.user.PointDto;
 import com.example.triple_mileage.repository.PointHistoryRepository;
 import com.example.triple_mileage.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +20,10 @@ public class PointService {
     private final PointHistoryRepository pointHistoryRepository;
     private final UserRepository userRepository;
 
-    public PointDto calculatePoint(String userIdStr){
-        UUID userId= UUID.fromString(userIdStr);
-        String userName= userRepository.findName(userId);
-        int userPoint=pointHistoryRepository.calculatePoint(userId).intValue();
-        return new PointDto(userName,userPoint);
+    public PointDto calculatePoint(String userIdStr) {
+        UUID userId = UUID.fromString(userIdStr);
+        String userName = userRepository.findName(userId);
+        int userPoint = pointHistoryRepository.calculatePoint(userId).intValue();
+        return new PointDto(userName, userPoint);
     }
 }
