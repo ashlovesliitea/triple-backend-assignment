@@ -19,7 +19,7 @@
 
 
 - API 테스트를 할 수 있도록 구성해둔 Postman 환경을 확인하시려면 [이 링크](https://www.postman.com/solar-resonance-194082/workspace/triple-mileage/collection/19267267-73b1ca0d-18e8-4b0e-9dec-ed383beeaf14?action=share&creator=19267267) 를 클릭해주세요!     
-
+    - request를 보내기 위해서는 collection을 자신의 워크스페이스에 fork해서 사용해야 합니다!:)
 - API 설명, 사용방법, request/response 구성, 실행 예시는 [API 명세서](https://documenter.getpostman.com/view/19267267/UzJPMajr) 를 참고해주세요!
 
 ## 3. ER Diagram
@@ -120,7 +120,7 @@
    
 6. 아래 명령어를 실행시켜 해당 프로젝트의 도커 이미지를 다운받고 컨테이너를 만들어 실행합니다.
     ````
-    docker pull skyrider/triple-assignment:0.0.1
+    docker pull skyrider1811/triple-assignment:0.0.1
     docker run -d --name triple-container -p 8080:8080 --link mysql-container skyrider1811/triple-assignment:0.0.1
     ````
 7. localhost:8080/{uri}를 통해 API를 테스트합니다.
