@@ -55,6 +55,21 @@ public class ReviewService {
             attachedPhotos.add(UUID.fromString(id));
         }
 
+        User user = userRepository.findUser(userId);
+        Place place = placeRepository.findOne(placeId);
+
+        //기존 리뷰 작성 이력 확인
+        List<Review> reviewList = place.getReviewList();
+        if (!reviewList.isEmpty()) {
+            for (Review findReview : reviewList) {
+                if (findReview.getUser().getUserId().equals(userId)) {
+                    throw new AlreadyWroteReviewException("이미 리뷰를 작성한 적이 있습니다!");
+                    //Controller로 넘겨서 ExceptionAdvice로 해결
+                }
+            }
+        }
+
+
         Review review = new Review();
 
         //리뷰 id, 컨텐츠, 사진 set
@@ -72,19 +87,6 @@ public class ReviewService {
         review.setContentPoint((content.length() > 0) ? 1 : 0);
         review.setPhotoPoint((!attachedPhotos.isEmpty()) ? 1 : 0);
 
-        User user = userRepository.findUser(userId);
-        Place place = placeRepository.findOne(placeId);
-
-        //기존 리뷰 작성 이력 확인
-        List<Review> reviewList = place.getReviewList();
-        if (!reviewList.isEmpty()) {
-            for (Review findReview : reviewList) {
-                if (findReview.getUser().getUserId().equals(userId)) {
-                    throw new AlreadyWroteReviewException("이미 리뷰를 작성한 적이 있습니다!");
-                    //Controller로 넘겨서 ExceptionAdvice로 해결
-                }
-            }
-        }
 
         //보너스 점수 확인 - place의 review 리스트가 비었는지 확인
         review.setBonusPoint((place.getReviewList().size() == 0) ? 1 : 0);
