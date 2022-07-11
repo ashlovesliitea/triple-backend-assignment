@@ -16,7 +16,7 @@
     - 리뷰 아이디를 path variable에 추가하면 리뷰 내용을 조회할 수 있습니다.
 - 유저 포인트 조회 `(/users/:userId/total-point)`
     - 현재까지 포인트이력을 조회해서 유저 포인트의 총합을 계산합니다.
- <br>
+
 
 - API 테스트를 할 수 있도록 구성해둔 Postman 환경을 확인하시려면 [이 링크](https://www.postman.com/solar-resonance-194082/workspace/triple-mileage/collection/19267267-73b1ca0d-18e8-4b0e-9dec-ed383beeaf14?action=share&creator=19267267) 를 클릭해주세요!     
 
