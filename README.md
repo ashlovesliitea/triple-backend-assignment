@@ -17,8 +17,8 @@
 - 유저 포인트 조회 `(/users/:userId/total-point)`
     - 현재까지 포인트이력을 조회해서 유저 포인트의 총합을 계산합니다.
  <br>
-- API 설명, 사용방법, request/response 구성, 다양한 example은 아래 문서를 참고해주세요! 
-    - [API 명세서 링크](https://documenter.getpostman.com/view/19267267/UzJPMajr)
+- API 테스트를 할 수 있도록 구성해둔 Postman 환경을 확인하시려면 [이 링크](https://www.postman.com/solar-resonance-194082/workspace/triple-mileage/collection/19267267-73b1ca0d-18e8-4b0e-9dec-ed383beeaf14?action=share&creator=19267267) 를 클릭해주세요!     
+- API 설명, 사용방법, request/response 구성, 실행 예시는 [API 명세서](https://documenter.getpostman.com/view/19267267/UzJPMajr) 를 참고해주세요!
 
 ## 3. ER Diagram
 ![image](https://user-images.githubusercontent.com/65891711/178157283-ab0afad8-4ff5-4007-ad8d-928eb08ece1c.png)
