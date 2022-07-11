@@ -186,7 +186,7 @@ public class ReviewService {
                     UUID attachedPhotoId = it2.next();
                     if (photo.getPhotoId().equals(attachedPhotoId)) {
                         //이미 존재하면 추후 추가할 사진에서 제외
-                        logger.info("둘 다 존재하는 사진:{}", attachedPhotoId);
+                        //logger.info("둘 다 존재하는 사진:{}", attachedPhotoId);
                         it2.remove();
                         curExistCheck = true;
                         break;
@@ -194,13 +194,13 @@ public class ReviewService {
                 }
                 if (curExistCheck == false) {
                     //사진이 사라졌다면 기존 사진 리스트에서 remove
-                    logger.info("삭제될 사진 id:{}", photo.getPhotoId().toString());
+                    //logger.info("삭제될 사진 id:{}", photo.getPhotoId().toString());
                     it.remove();
                 }
             }
 
             for (UUID photoId : attachedPhotos) {
-                logger.info("추가된 사진 id:{}", photoId);
+                //logger.info("추가된 사진 id:{}", photoId);
                 Photo photo = Photo.createPhoto(photoId, review);
                 review.getPhotos().add(photo);
 
